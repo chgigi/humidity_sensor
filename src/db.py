@@ -3,12 +3,13 @@ from psycopg2 import Error
 
 
 class DataBase:
-    def __init__(self, user, password, address, port, name):
+    def __init__(self, user, password, address, port, name, logger):
         self._user = user
         self._password = password
         self._address = address
         self._port = port
         self._name = name
+        self._logger = logger
         self._connection = None
         self._cursor = None
         self.creation()
@@ -21,7 +22,6 @@ class DataBase:
             self._cursor.execute("CREATE TABLE room (id serial, type varchar, name varchar, data method);")
             self._connection.commit()
 
-
     def connect(self):
         try:
             self._connection = psycopg2.connect(user=self._user,
@@ -31,7 +31,7 @@ class DataBase:
                                                 database=self._name)
             self._cursor = self._connection.cursor()
         except (Exception, Error) as error:
-            print("Error while connecting to PostgreSQL", error)
+            self._logger.error(f"Unable to connect to the DataBase: {error[0]} : {error[1]}")
             return False
         return True
 
