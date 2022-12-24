@@ -30,6 +30,7 @@ class App(web.Application):
         self.router.add_route('GET', '/ping', self._get_ping)
         self.router.add_route('POST', '/room', self._add_new_room)
         self.router.add_route('GET', '/room/{room_id}/temperature', self._get_temperature)
+        self.router.add_route('GET', '/room/{room_id}/humidity', self._get_humidity)
 
     def run(self):
         web.run_app(self, host=self._address, port=self._port)
@@ -46,6 +47,15 @@ class App(web.Application):
         # With DHT22 in local
         pin = 2
         response = get_temperature_from_dht22_local(pin, 'DHT_22', temperature_return=True, humidity_return=False)
+        if response is None:
+            return web.HTTPServiceUnavailable()
+        return web.HTTPOk(body=json.dumps(response), content_type="application/json")
+
+    async def _get_humidity(self, request):
+        room_id = request.match_info['room_id']
+        # With DHT22 in local
+        pin = 2
+        response = get_temperature_from_dht22_local(pin, 'DHT_22', temperature_return=False, humidity_return=True)
         if response is None:
             return web.HTTPServiceUnavailable()
         return web.HTTPOk(body=json.dumps(response), content_type="application/json")
