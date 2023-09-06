@@ -20,10 +20,10 @@ def run():
 
     args = parser.parse_args()
 
-    if not os.path.exists("./logs"):
-        os.mkdir("./logs")
+    if not os.path.exists("/var/log/humidity_sensor"):
+        os.mkdir("/var/log/humidity_sensor")
 
-    logging.basicConfig(format='%(asctime)s - %(message)s', filename=args.logfile, encoding='utf-8', level=logging.DEBUG)
+    logging.basicConfig(format='%(asctime)s - %(message)s', filename=f"/var/log/humidity_sensor/{args.logfile}", encoding='utf-8', level=logging.DEBUG)
     logger = logging.getLogger()
 
     handler = logging.StreamHandler(sys.stderr)
@@ -48,4 +48,3 @@ def run():
     app = App(logger=logger, address="0.0.0.0", port=args.port, db_address=args.db_address,
               db_port=args.db_port, db_user=db_user, db_pass=db_pass, db_name=db_name)
     app.run()
-    
